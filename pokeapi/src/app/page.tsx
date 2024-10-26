@@ -5,13 +5,29 @@ import { useCallback, useEffect, useState } from "react";
 interface Pokemon {
   name: string;
   url: string;
+  sprite?: string;
+  typeName?: string;
+}
+
+interface PokemonType {
+  slot: number;
+  type: {
+    name: string;
+  };
+}
+
+interface PokemonDetails {
+  sprites: {
+    front_default: string;
+  };
+  types: PokemonType[];
 }
 
 export default function Home() {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
   const [offset, setOffset] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const pokemonHeight = 50;
+  const pokemonHeight = 180;
 
   const calculateInitialLimit = () => {
     const screenHeight = window.innerHeight;
@@ -28,9 +44,16 @@ export default function Home() {
       }
       const data = await response.json();
 
+      const pokemonsWithDetails = await Promise.all(
+        data.results.map(async (pokemon: Pokemon) => {
+          const details = await fetchPokemonDetails(pokemon.url);
+          return { ...pokemon, ...details };
+        })
+      );
+
       setPokemons((prev) => {
-        const newPokemons = data.results.filter(
-          (pokemon: Pokemon) => !prev.some((p) => p.url === pokemon.url)
+        const newPokemons = pokemonsWithDetails.filter(
+          (pokemon: Pokemon & { sprite: string; typeName: string | null }) => !prev.some((p) => p.url === pokemon.url)
         );
         return [...prev, ...newPokemons];
       });
@@ -40,6 +63,24 @@ export default function Home() {
       console.log("Error fetching data:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchPokemonDetails = async (url: string): Promise<{ sprite: string | null; typeName: string | null }> => {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error("Error fetching pokemon details");
+      }
+      const data: PokemonDetails = await response.json();
+
+      const sprite = data.sprites.front_default || 'file.svg';
+      const typeName = data.types[0]?.type.name || null;
+
+      return { sprite, typeName };
+    } catch (error) {
+      console.error("Error fetching pokemon details:", error);
+      return { sprite: 'file.svg', typeName: null };
     }
   };
 
@@ -66,12 +107,14 @@ export default function Home() {
   }, [handleScroll]);
 
   return (
-    <>
+    <div className="flex flex-col items-center gap-2.5">
       {pokemons.map((pokemon) => (
-        <div className="p-2 border rounded shadow-lg" key={pokemon.url}>
-          {pokemon.name}
+        <div className="p-10 border-b flex flex-col items-center" key={pokemon.url}>
+          <h2 className="text-4xl font-semibold capitalize text-gray-400">{pokemon.name}</h2>
+          {pokemon.sprite && <img src={pokemon.sprite} alt={pokemon.name} width='150px' />}
+          <div className="capitalize">Type: {pokemon.typeName}</div>
         </div>
       ))}
-    </>
+    </div>
   );
 }

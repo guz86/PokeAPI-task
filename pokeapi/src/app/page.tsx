@@ -20,7 +20,7 @@ interface PokemonDetails {
 interface Pokemon {
   name: string;
   url: string;
-  sprite?: string;
+  sprite?: string | null;
   typeNames?: string[];
 }
 
@@ -56,40 +56,41 @@ export default function Home() {
       }));
 
       setAllPokemon(allPokemon);
-      console.log(allPokemon);
+
+      console.log('fetchAllPokemonNames allPokemon', allPokemon);
+
+
     } catch (error) {
       console.log("Error fetching all Pokemon names:", error);
     }
   };
 
-  const fetchPokemons = async (limit: number, currentOffset: number) => {
+  const fetchPokemons = useCallback(async (limit: number, currentOffset: number) => {
     setIsLoading(true);
     try {
-      const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${currentOffset}`);
-      if (!response.ok) throw new Error("Error fetching data");
-      const data = await response.json();
-
+      console.log('limit', limit);
+      console.log('currentOffset', currentOffset);
+  
+      const pokemonsSimpleData = allPokemon.slice(currentOffset, currentOffset + limit);
+      console.log('pokemonsSimpleData', pokemonsSimpleData);
+  
       const pokemonsWithDetails = await Promise.all(
-        data.results.map(async (pokemon: Pokemon) => {
+        pokemonsSimpleData.map(async (pokemon: Pokemon) => {
           const details = await fetchPokemonDetails(pokemon.url);
           return { ...pokemon, ...details };
         })
       );
-
-      setPokemons((prev) => {
-        const newPokemons = pokemonsWithDetails.filter(
-          (pokemon: Pokemon & { sprite: string; typeName: string | null }) => !prev.some((p) => p.url === pokemon.url)
-        );
-        return [...prev, ...newPokemons];
-      });
-
+  
+      setPokemons((prev) => [...prev, ...pokemonsWithDetails]);
+  
       setOffset((prevOffset) => prevOffset + limit);
     } catch (error) {
       console.log("Error fetching data:", error);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [allPokemon]); 
+
 
   const fetchPokemonDetails = async (url: string): Promise<{ sprite: string | null; typeNames: string[] }> => {
     try {
@@ -109,19 +110,26 @@ export default function Home() {
 
   useEffect(() => {
     fetchAllPokemonNames();
-    const initialLimit = calculateInitialLimit();
-    fetchPokemons(initialLimit, 0);
   }, []);
 
-  const handleScroll = useCallback(() => {
-    if (
-      window.innerHeight + document.documentElement.scrollTop >=
-      document.documentElement.offsetHeight - 50 &&
-      !isLoading
-    ) {
-      fetchPokemons(10, offset);
+  useEffect(() => {
+    if (allPokemon.length > 0) {
+      const initialLimit = calculateInitialLimit();
+      fetchPokemons(initialLimit, 0);
+      console.log('fetchPokemons pokemons', pokemons)
     }
-  }, [offset, isLoading]);
+  }, [allPokemon]);
+
+
+const handleScroll = useCallback(() => {
+  if (
+    window.innerHeight + document.documentElement.scrollTop >=
+    document.documentElement.offsetHeight - 50 &&
+    !isLoading
+  ) {
+    fetchPokemons(10, offset);
+  }
+}, [offset, isLoading, fetchPokemons]);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
@@ -136,16 +144,16 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center gap-2.5">
-<input
-  type="text"
-  placeholder="Search Pokemon"
-  className="p-3 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 ease-in-out shadow-md hover:shadow-lg text-black"
-  value={searchTerm}
-  onChange={(e) => setSearchTerm(e.target.value)}
-/>
+      <input
+        type="text"
+        placeholder="Search Pokemon"
+        className="p-3 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 ease-in-out shadow-md hover:shadow-lg text-black"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
 
-      {filteredPokemons.length > 0 ? (
-        filteredPokemons.map((pokemon) => (
+      {pokemons.length > 0 ? (
+        pokemons.map((pokemon) => (
           <div className="p-10 border-b flex flex-col items-center" key={pokemon.url}>
             <h2 className="text-4xl font-semibold capitalize text-gray-400">{pokemon.name}</h2>
             {pokemon.sprite && <img src={pokemon.sprite} alt={pokemon.name} width="250px" />}

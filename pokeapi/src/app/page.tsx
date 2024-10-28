@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 
 interface PokemonType {
@@ -33,12 +34,17 @@ export default function Home() {
   const [selectedType, setSelectedType] = useState<string>('all');
   const [types, setTypes] = useState<TypeResult[]>([]);
 
-  const pokemonHeight = 180;
+  const pokemonHeight = 300;
+  const pokemonWidth = 300;
 
   const calculateInitialLimit = () => {
+    const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
-    const limit = Math.ceil((screenHeight * 1.2) / pokemonHeight);
-    return Math.ceil(limit / 10) * 10;
+
+    const blocksInRow = Math.floor(screenWidth / pokemonWidth);
+    const blocksInColumn = Math.ceil((screenHeight * 1.3) / pokemonHeight);
+
+    return blocksInRow * blocksInColumn;
   };
 
   const fetchAllPokemonNames = async () => {
@@ -146,6 +152,7 @@ export default function Home() {
 
   useEffect(() => {
     if (allPokemon.length > 0) {
+      setPokemons([]);
       const initialLimit = calculateInitialLimit();
       fetchPokemons(initialLimit, 0, allPokemon, searchTerm, selectedType);
       console.log('fetchPokemons pokemons', pokemons);
@@ -257,26 +264,33 @@ export default function Home() {
         ))}
       </select>
 
-      {pokemons.length > 0 ? (
-        pokemons.map((pokemon) => (
-          <div
-            className='p-10 border-b flex flex-col items-center'
-            key={pokemon.url}
-          >
-            <h2 className='text-4xl font-semibold capitalize text-gray-400'>
-              {pokemon.name}
-            </h2>
-            {pokemon.sprite && (
-              <img src={pokemon.sprite} alt={pokemon.name} width='250px' />
-            )}
-            <div className='text-2xl font-semibold capitalize text-gray-500'>
-              Type: {pokemon.typeNames?.join(', ') || 'Unknown'}
-            </div>
-          </div>
-        ))
-      ) : (
-        <p>No Pokemon found</p>
-      )}
+      <div className='flex flex-row flex-wrap justify-center items-center gap-2'>
+        {pokemons.length > 0 ? (
+          pokemons.map((pokemon, index) => (
+            <Link
+              href={`/pokemon/${pokemon.name}`}
+              key={`${pokemon.url}-${index}`}
+            >
+              <div
+                className='p-10 flex flex-col items-center bg-gray-800 h-80 w-80'
+                key={pokemon.url}
+              >
+                <h2 className='text-4xl font-semibold capitalize text-gray-400'>
+                  {pokemon.name}
+                </h2>
+                {pokemon.sprite && (
+                  <img src={pokemon.sprite} alt={pokemon.name} width='150px' />
+                )}
+                <div className='text-2xl font-semibold capitalize text-gray-500'>
+                  Type: {pokemon.typeNames?.join(', ') || 'Unknown'}
+                </div>
+              </div>
+            </Link>
+          ))
+        ) : (
+          <p>No Pokemon found</p>
+        )}
+      </div>
     </div>
   );
 }

@@ -30,6 +30,8 @@ export default function Home() {
   const [offset, setOffset] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [selectedType, setSelectedType] = useState<string>('all');
+  const [types, setTypes] = useState<TypeResult[]>([]);
 
   const pokemonHeight = 180;
 
@@ -71,16 +73,28 @@ export default function Home() {
     limit: number,
     currentOffset: number,
     pokemons: Pokemon[],
-    searchTerm: string | null
+    searchTerm: string | null,
+    pokemonsType: string | null
   ) => {
     setIsLoading(true);
     try {
       console.log('limit', limit);
       console.log('currentOffset', currentOffset);
 
-      const pokemonsFilter = pokemons.filter((pokemon) =>
-        pokemon.name.toLowerCase().includes(searchTerm?.toLowerCase() || '')
-      );
+      console.log('fetchPokemons pokemonsFilter', pokemonsType);
+      let pokemonsFilter;
+      if (pokemonsType && pokemonsType != 'all') {
+        const pokemonsByType = await fetchPokemonsByType(pokemonsType);
+        console.log('fetchPokemons pokemonsByType', pokemonsByType);
+        pokemonsFilter = pokemonsByType.filter((pokemon) =>
+          pokemon.name.toLowerCase().includes(searchTerm?.toLowerCase() || '')
+        );
+      } else {
+        pokemonsFilter = pokemons.filter((pokemon) =>
+          pokemon.name.toLowerCase().includes(searchTerm?.toLowerCase() || '')
+        );
+      }
+
       const pokemonsSimpleData = pokemonsFilter.slice(
         currentOffset,
         currentOffset + limit
@@ -127,12 +141,13 @@ export default function Home() {
 
   useEffect(() => {
     fetchAllPokemonNames();
+    fetchTypes();
   }, []);
 
   useEffect(() => {
     if (allPokemon.length > 0) {
       const initialLimit = calculateInitialLimit();
-      fetchPokemons(initialLimit, 0, allPokemon, searchTerm);
+      fetchPokemons(initialLimit, 0, allPokemon, searchTerm, selectedType);
       console.log('fetchPokemons pokemons', pokemons);
     }
   }, [allPokemon]);
@@ -143,7 +158,7 @@ export default function Home() {
         document.documentElement.offsetHeight - 50 &&
       !isLoading
     ) {
-      fetchPokemons(10, offset, allPokemon, searchTerm);
+      fetchPokemons(10, offset, allPokemon, searchTerm, selectedType);
     }
   }, [offset, isLoading]);
 
@@ -159,8 +174,65 @@ export default function Home() {
     setPokemons([]);
 
     const initialLimit = calculateInitialLimit();
-    fetchPokemons(initialLimit, 0, allPokemon, searchTerm);
+    fetchPokemons(initialLimit, 0, allPokemon, searchTerm, selectedType);
   }, [searchTerm]);
+
+  useEffect(() => {
+    setOffset(0);
+    setPokemons([]);
+
+    const initialLimit = calculateInitialLimit();
+    fetchPokemons(initialLimit, 0, allPokemon, searchTerm, selectedType);
+  }, [selectedType]);
+
+  interface TypeResponse {
+    name: string;
+    pokemon: PokemonTypeResponse[];
+  }
+  interface PokemonTypeResponse {
+    slot: number;
+    pokemon: Pokemon;
+  }
+
+  interface TypeResult {
+    name: string;
+    url: string;
+  }
+
+  interface TypesApiResponse {
+    count: number;
+    results: TypeResult[];
+  }
+
+  const fetchTypes = async () => {
+    try {
+      const response = await fetch('https://pokeapi.co/api/v2/type');
+      if (!response.ok) throw new Error('Error fetching types');
+      const data: TypesApiResponse = await response.json();
+      setTypes(data.results.slice(0, -1));
+      console.log('data.results', data.results);
+    } catch (error) {
+      console.error('Error fetching types:', error);
+    }
+  };
+
+  const fetchPokemonsByType = async (type: string): Promise<Pokemon[]> => {
+    try {
+      const response = await fetch(`https://pokeapi.co/api/v2/type/${type}`);
+      if (!response.ok) throw new Error('Error fetching Pokemon by type');
+
+      const data: TypeResponse = await response.json();
+      const pokemonList: Pokemon[] = data.pokemon.map((p) => ({
+        name: p.pokemon.name,
+        url: p.pokemon.url,
+      }));
+
+      return pokemonList;
+    } catch (error) {
+      console.error('Error fetching Pokemon by type:', error);
+      return [];
+    }
+  };
 
   return (
     <div className='flex flex-col items-center gap-2.5'>
@@ -171,6 +243,19 @@ export default function Home() {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
+
+      <select
+        className='p-2 mb-4 text-black border border-gray-300 rounded-md'
+        value={selectedType}
+        onChange={(e) => setSelectedType(e.target.value)}
+      >
+        <option value='all'>All</option>
+        {types.map((type) => (
+          <option key={type.name} value={type.name}>
+            {type.name.charAt(0).toUpperCase() + type.name.slice(1)}
+          </option>
+        ))}
+      </select>
 
       {pokemons.length > 0 ? (
         pokemons.map((pokemon) => (

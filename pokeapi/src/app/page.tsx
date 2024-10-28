@@ -165,20 +165,6 @@ export default function Home() {
     }
   };
 
-  useEffect(() => {
-    fetchAllPokemonNames();
-    fetchTypes();
-  }, []);
-
-  useEffect(() => {
-    if (allPokemon.length > 0) {
-      setPokemons([]);
-      const initialLimit = calculateInitialLimit();
-      fetchPokemons(initialLimit, 0, allPokemon, searchTerm, selectedType);
-      console.log('fetchPokemons pokemons', pokemons);
-    }
-  }, [allPokemon]);
-
   const handleScroll = useCallback(() => {
     if (
       window.innerHeight + document.documentElement.scrollTop >=
@@ -189,6 +175,45 @@ export default function Home() {
     }
   }, [offset, isLoading]);
 
+  const [namesLoaded, setNamesLoaded] = useState(false);
+
+  useEffect(() => {
+    const loadInitialData = async () => {
+      try {
+        await fetchAllPokemonNames();
+        setNamesLoaded(true);
+        await fetchTypes();
+      } catch (error) {
+        console.error('Error loading initial data:', error);
+      }
+    };
+
+    loadInitialData();
+  }, []);
+
+  useEffect(() => {
+    const loadPokemons = async () => {
+      if (namesLoaded) {
+        try {
+          setPokemons([]);
+          const initialLimit = calculateInitialLimit();
+          await fetchPokemons(
+            initialLimit,
+            0,
+            allPokemon,
+            searchTerm,
+            selectedType
+          );
+          console.log('fetchPokemons pokemons', pokemons);
+        } catch (error) {
+          console.error('Error fetching pokemons:', error);
+        }
+      }
+    };
+
+    loadPokemons();
+  }, [namesLoaded]);
+
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
     return () => {
@@ -197,20 +222,12 @@ export default function Home() {
   }, [handleScroll]);
 
   useEffect(() => {
-    setOffset(0);
     setPokemons([]);
+    setOffset(0);
 
     const initialLimit = calculateInitialLimit();
     fetchPokemons(initialLimit, 0, allPokemon, searchTerm, selectedType);
-  }, [searchTerm]);
-
-  useEffect(() => {
-    setOffset(0);
-    setPokemons([]);
-
-    const initialLimit = calculateInitialLimit();
-    fetchPokemons(initialLimit, 0, allPokemon, searchTerm, selectedType);
-  }, [selectedType]);
+  }, [searchTerm, selectedType]);
 
   interface TypeResponse {
     name: string;
@@ -266,7 +283,7 @@ export default function Home() {
       <div className='flex justify-between items-center w-full mb-4 p-4 bg-gray-700'>
         <Link href='/'>
           <h1 className='text-2xl font-bold text-white cursor-pointer'>
-            Pokemon App
+            Pokedex
           </h1>
         </Link>
         <Link href='/favorites'>

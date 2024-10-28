@@ -52,7 +52,7 @@ const PokemonPage = () => {
       <div className='flex justify-between items-center w-full mb-4 p-4 bg-gray-700'>
         <Link href='/'>
           <h1 className='text-2xl font-bold text-white cursor-pointer'>
-            Pokemon App
+            Pokedex
           </h1>
         </Link>
         <Link href='/favorites'>

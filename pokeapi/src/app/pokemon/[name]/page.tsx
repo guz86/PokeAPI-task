@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
+import Link from 'next/link';
 
 interface Move {
   move: { name: string };
@@ -19,35 +20,48 @@ interface PokemonDetails {
 }
 
 const PokemonPage = () => {
-  const { name } = useParams();
-  const router = useRouter();
+  const { name } = useParams<{ name: string }>();
   const [pokemon, setPokemon] = useState<PokemonDetails | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchPokemon = async () => {
-      const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
+      try {
+        const response = await fetch(
+          `https://pokeapi.co/api/v2/pokemon/${name}`
+        );
 
-      if (response.ok) {
+        if (!response.ok) throw new Error('Error fetching Pokemon data');
+
         const data: PokemonDetails = await response.json();
         setPokemon(data);
-      } else {
-        console.error('Error fetching Pokemon data');
+      } catch (err) {
+        console.error(err);
+        setError('Failed to fetch Pokemon data.');
       }
     };
 
     fetchPokemon();
   }, [name]);
 
+  if (error) return <div className='text-red-500'>{error}</div>;
   if (!pokemon) return <div className='text-white'>Loading...</div>;
 
   return (
     <div className='flex flex-col min-h-screen bg-gray-900 p-4'>
-      <button
-        onClick={() => router.back()}
-        className='self-start mb-4 px-4 py-2 text-sm text-black bg-gray-400 rounded hover:bg-gray-500 transition'
-      >
-        Back
-      </button>
+      <div className='flex justify-between items-center w-full mb-4 p-4 bg-gray-700'>
+        <Link href='/'>
+          <h1 className='text-2xl font-bold text-white cursor-pointer'>
+            Pokemon App
+          </h1>
+        </Link>
+        <Link href='/favorites'>
+          <button className='px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-500 transition'>
+            Favorites
+          </button>
+        </Link>
+      </div>
+
       <div className='flex justify-center items-center flex-grow'>
         <div className='bg-gray-800 rounded-lg shadow-lg max-w-full w-full sm:max-w-[600px] overflow-hidden'>
           <h1 className='p-5 text-3xl font-bold text-white capitalize'>

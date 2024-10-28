@@ -3,6 +3,10 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from './store/store';
+import { addFavorite, removeFavorite } from './store/favoritesSlice';
+
 interface PokemonType {
   slot: number;
   type: {
@@ -33,6 +37,22 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedType, setSelectedType] = useState<string>('all');
   const [types, setTypes] = useState<TypeResult[]>([]);
+
+  const dispatch = useDispatch();
+  const favorites = useSelector(
+    (state: RootState) => state.favorites.favorites
+  );
+
+  const handleAddToFavorites = (pokemon: Pokemon) => {
+    dispatch(addFavorite({ name: pokemon.name, url: pokemon.url }));
+  };
+
+  const handleRemoveFromFavorites = (pokemon: Pokemon) => {
+    dispatch(removeFavorite(pokemon.name));
+  };
+
+  const isFavorite = (pokemon: Pokemon) =>
+    favorites.some((fav) => fav.name === pokemon.name);
 
   const pokemonHeight = 300;
   const pokemonWidth = 300;
@@ -243,6 +263,19 @@ export default function Home() {
 
   return (
     <div className='flex flex-col items-center gap-2.5'>
+      <div className='flex justify-between items-center w-full mb-4 p-4 bg-gray-700'>
+        <Link href='/'>
+          <h1 className='text-2xl font-bold text-white cursor-pointer'>
+            Pokemon App
+          </h1>
+        </Link>
+        <Link href='/favorites'>
+          <button className='px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-500 transition'>
+            Favorites
+          </button>
+        </Link>
+      </div>
+
       <input
         type='text'
         placeholder='Search Pokemon'
@@ -266,15 +299,12 @@ export default function Home() {
 
       <div className='flex flex-row flex-wrap justify-center items-center gap-2'>
         {pokemons.length > 0 ? (
-          pokemons.map((pokemon, index) => (
-            <Link
-              href={`/pokemon/${pokemon.name}`}
-              key={`${pokemon.url}-${index}`}
+          pokemons.map((pokemon) => (
+            <div
+              key={pokemon.name}
+              className='p-10 flex flex-col gap-4 items-center bg-gray-800 h-80 w-80'
             >
-              <div
-                className='p-10 flex flex-col items-center bg-gray-800 h-80 w-80'
-                key={pokemon.url}
-              >
+              <Link href={`/pokemon/${pokemon.name}`}>
                 <h2 className='text-4xl font-semibold capitalize text-gray-400'>
                   {pokemon.name}
                 </h2>
@@ -284,8 +314,23 @@ export default function Home() {
                 <div className='text-2xl font-semibold capitalize text-gray-500'>
                   Type: {pokemon.typeNames?.join(', ') || 'Unknown'}
                 </div>
-              </div>
-            </Link>
+              </Link>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (isFavorite(pokemon)) {
+                    handleRemoveFromFavorites(pokemon);
+                  } else {
+                    handleAddToFavorites(pokemon);
+                  }
+                }}
+                className='mb-4 px-4 py-2 text-sm text-black bg-gray-400 rounded hover:bg-gray-500 transition'
+              >
+                {isFavorite(pokemon)
+                  ? 'Remove from Favorites'
+                  : 'Add to Favorites'}
+              </button>
+            </div>
           ))
         ) : (
           <p>No Pokemon found</p>

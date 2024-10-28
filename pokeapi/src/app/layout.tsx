@@ -1,6 +1,9 @@
-import type { Metadata } from 'next';
+'use client';
+
 import localFont from 'next/font/local';
 import './globals.css';
+import { Provider } from 'react-redux';
+import store from './store/store';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -13,23 +16,24 @@ const geistMono = localFont({
   weight: '100 900',
 });
 
-export const metadata: Metadata = {
-  title: 'PokeApi App',
-  description: 'My PokeApi App',
-};
-
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang='en'>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
-    </html>
+    <Provider store={store}>
+      <html lang='en'>
+        <head>
+          {/* <title>{metadata.title}</title>
+          <meta name="description" content={metadata.description} /> */}
+        </head>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+          {children}
+        </body>
+      </html>
+    </Provider>
   );
 }

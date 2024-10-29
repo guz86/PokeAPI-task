@@ -7,6 +7,7 @@ import { RootState } from '../store/store';
 import { addFavorite, removeFavorite } from '../store/favoritesSlice';
 import Navbar from '@/features/navbar/ui/navbar.ui';
 import SearchBar from '@/features/searchBar/ui/searchBar.ui';
+import TypeSelect from '@/features/typeSelect/ui/typeSelect.ui';
 
 interface PokemonType {
   slot: number;
@@ -273,19 +274,11 @@ export default function Home() {
       <Navbar />
       <div className='flex flex-row items-center gap-10'>
         <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-
-        <select
-          className='p-2 mb-4 text-black border border-gray-300 rounded-md'
-          value={selectedType}
-          onChange={(e) => setSelectedType(e.target.value)}
-        >
-          <option value='all'>All</option>
-          {types.map((type) => (
-            <option key={type.name} value={type.name}>
-              {type.name.charAt(0).toUpperCase() + type.name.slice(1)}
-            </option>
-          ))}
-        </select>
+        <TypeSelect
+          selectedType={selectedType}
+          setSelectedType={setSelectedType}
+          types={types}
+        />
       </div>
 
       <div className='flex flex-row flex-wrap justify-center items-center gap-2'>

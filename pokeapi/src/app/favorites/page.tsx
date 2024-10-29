@@ -13,9 +13,14 @@ interface PokemonCardProps {
 }
 
 const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon }) => {
+  const capitalizeName = (name: string) =>
+    name.charAt(0).toUpperCase() + name.slice(1);
+
   return (
-    <div className='p-4 border rounded shadow hover:shadow-lg transition-shadow'>
-      <h2 className='text-lg font-semibold mt-2'>{pokemon.name}</h2>
+    <div className='p-4 '>
+      <h2 className='text-lg font-semibold mt-2'>
+        {capitalizeName(pokemon.name)}
+      </h2>
     </div>
   );
 };
@@ -26,7 +31,7 @@ interface PokemonListProps {
 
 const PokemonList: React.FC<PokemonListProps> = ({ pokemons }) => {
   return (
-    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
+    <div className='flex flex-wrap gap-4'>
       {pokemons.map((pokemon) => (
         <PokemonCard key={pokemon.id} pokemon={pokemon} />
       ))}
@@ -58,7 +63,7 @@ export default function FavoritesPage() {
           </button>
         </Link>
       </div>
-      <h1 className='text-4xl font-semibold text-gray-700'>Favorite pokemon</h1>
+      <h1 className='text-4xl font-semibold text-gray-300'>Favorite Pokémon</h1>
       {pokemonFavorites.length > 0 ? (
         <PokemonList pokemons={pokemonFavorites} />
       ) : (

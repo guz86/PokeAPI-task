@@ -88,10 +88,8 @@ export default function Home() {
       );
 
       setAllPokemon(allPokemon);
-
-      console.log('fetchAllPokemonNames allPokemon', allPokemon);
     } catch (error) {
-      console.log('Error fetching all Pokemon names:', error);
+      console.error('Error fetching all Pokemon names:', error);
     }
   };
 
@@ -104,14 +102,9 @@ export default function Home() {
   ) => {
     setIsLoading(true);
     try {
-      console.log('limit', limit);
-      console.log('currentOffset', currentOffset);
-
-      console.log('fetchPokemons pokemonsFilter', pokemonsType);
       let pokemonsFilter;
       if (pokemonsType && pokemonsType != 'all') {
         const pokemonsByType = await fetchPokemonsByType(pokemonsType);
-        console.log('fetchPokemons pokemonsByType', pokemonsByType);
         pokemonsFilter = pokemonsByType.filter((pokemon) =>
           pokemon.name.toLowerCase().includes(searchTerm?.toLowerCase() || '')
         );
@@ -126,8 +119,6 @@ export default function Home() {
         currentOffset + limit
       );
 
-      console.log('pokemonsSimpleData', pokemonsSimpleData);
-
       const pokemonsWithDetails = await Promise.all(
         pokemonsSimpleData.map(async (pokemon: Pokemon) => {
           const details = await fetchPokemonDetails(pokemon.url);
@@ -139,7 +130,7 @@ export default function Home() {
 
       setOffset((prevOffset) => prevOffset + limit);
     } catch (error) {
-      console.log('Error fetching data:', error);
+      console.error('Error fetching data:', error);
     } finally {
       setIsLoading(false);
     }
@@ -204,7 +195,6 @@ export default function Home() {
             searchTerm,
             selectedType
           );
-          console.log('fetchPokemons pokemons', pokemons);
         } catch (error) {
           console.error('Error fetching pokemons:', error);
         }
@@ -254,7 +244,6 @@ export default function Home() {
       if (!response.ok) throw new Error('Error fetching types');
       const data: TypesApiResponse = await response.json();
       setTypes(data.results.slice(0, -1));
-      console.log('data.results', data.results);
     } catch (error) {
       console.error('Error fetching types:', error);
     }

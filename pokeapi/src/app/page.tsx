@@ -4,8 +4,8 @@ import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from './store/store';
-import { addFavorite, removeFavorite } from './store/favoritesSlice';
+import { RootState } from '../store/store';
+import { addFavorite, removeFavorite } from '../store/favoritesSlice';
 
 interface PokemonType {
   slot: number;

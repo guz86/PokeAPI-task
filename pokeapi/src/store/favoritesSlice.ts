@@ -1,13 +1,8 @@
+import {
+  FavoritePokemon,
+  FavoritesState,
+} from '@/features/pokemon/types/pokemon';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-interface FavoritePokemon {
-  name: string;
-  url: string;
-}
-
-interface FavoritesState {
-  favorites: FavoritePokemon[];
-}
 
 const initialState: FavoritesState = {
   favorites: [],
@@ -18,7 +13,12 @@ const favoritesSlice = createSlice({
   initialState,
   reducers: {
     addFavorite: (state, action: PayloadAction<FavoritePokemon>) => {
-      state.favorites.push(action.payload);
+      const exists = state.favorites.some(
+        (pokemon) => pokemon.name === action.payload.name
+      );
+      if (!exists) {
+        state.favorites.push(action.payload);
+      }
     },
     removeFavorite: (state, action: PayloadAction<string>) => {
       state.favorites = state.favorites.filter(
@@ -29,5 +29,4 @@ const favoritesSlice = createSlice({
 });
 
 export const { addFavorite, removeFavorite } = favoritesSlice.actions;
-
 export default favoritesSlice.reducer;

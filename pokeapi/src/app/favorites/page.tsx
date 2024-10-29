@@ -1,43 +1,9 @@
 'use client';
 import { useSelector } from 'react-redux';
-import { RootState } from '../store/store';
 import Link from 'next/link';
-
-export interface Pokemon {
-  id: number;
-  name: string;
-}
-
-interface PokemonCardProps {
-  pokemon: Pokemon;
-}
-
-const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon }) => {
-  const capitalizeName = (name: string) =>
-    name.charAt(0).toUpperCase() + name.slice(1);
-
-  return (
-    <div className='p-4 '>
-      <h2 className='text-lg font-semibold mt-2'>
-        {capitalizeName(pokemon.name)}
-      </h2>
-    </div>
-  );
-};
-
-interface PokemonListProps {
-  pokemons: Pokemon[];
-}
-
-const PokemonList: React.FC<PokemonListProps> = ({ pokemons }) => {
-  return (
-    <div className='flex flex-wrap gap-4'>
-      {pokemons.map((pokemon) => (
-        <PokemonCard key={pokemon.id} pokemon={pokemon} />
-      ))}
-    </div>
-  );
-};
+import { RootState } from '../../store/store';
+import { Pokemon } from '@/features/pokemon/types/pokemon';
+import PokemonList from '@/features/pokemon/components/PokemonList';
 
 export default function FavoritesPage() {
   const favorites = useSelector(

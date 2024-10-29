@@ -31,6 +31,40 @@ interface Pokemon {
   typeNames?: string[];
 }
 
+const PokemonCard = ({
+  name,
+  sprite,
+  typeNames,
+  isFavorite,
+  onToggleFavorite,
+}: {
+  name: string;
+  sprite?: string | null;
+  typeNames?: string[];
+  isFavorite: boolean;
+  onToggleFavorite: () => void;
+}) => {
+  return (
+    <div className='p-5 flex flex-col gap-4 items-center bg-gray-800 h-80 w-80'>
+      <Link href={`/pokemon/${name}`}>
+        <h2 className='text-2xl font-semibold capitalize text-gray-400'>
+          {name}
+        </h2>
+        {sprite && <img src={sprite} alt={name} width='150px' />}
+        <div className='text-2xl font-semibold capitalize text-gray-500'>
+          Type: {typeNames?.join(', ') || 'Unknown'}
+        </div>
+      </Link>
+      <button
+        onClick={onToggleFavorite}
+        className='mb-4 px-4 py-2 text-sm text-black bg-gray-400 rounded hover:bg-gray-500 transition'
+      >
+        {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
+      </button>
+    </div>
+  );
+};
+
 export default function Home() {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
   const [allPokemon, setAllPokemon] = useState<Pokemon[]>([]);
@@ -38,7 +72,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedType, setSelectedType] = useState<string>('all');
-  const [types, setTypes] = useState<TypeResult[]>([]);
+  const [types, setTypes] = useState<{ name: string; url: string }[]>([]);
 
   const dispatch = useDispatch();
   const favorites = useSelector(
@@ -105,7 +139,7 @@ export default function Home() {
     setIsLoading(true);
     try {
       let pokemonsFilter;
-      if (pokemonsType && pokemonsType != 'all') {
+      if (pokemonsType && pokemonsType !== 'all') {
         const pokemonsByType = await fetchPokemonsByType(pokemonsType);
         pokemonsFilter = pokemonsByType.filter((pokemon) =>
           pokemon.name.toLowerCase().includes(searchTerm?.toLowerCase() || '')
@@ -225,6 +259,7 @@ export default function Home() {
     name: string;
     pokemon: PokemonTypeResponse[];
   }
+
   interface PokemonTypeResponse {
     slot: number;
     pokemon: Pokemon;
@@ -284,37 +319,20 @@ export default function Home() {
       <div className='flex flex-row flex-wrap justify-center items-center gap-2'>
         {pokemons.length > 0 ? (
           pokemons.map((pokemon) => (
-            <div
+            <PokemonCard
               key={pokemon.name}
-              className='p-5 flex flex-col gap-4 items-center bg-gray-800 h-80 w-80'
-            >
-              <Link href={`/pokemon/${pokemon.name}`}>
-                <h2 className='text-2xl font-semibold capitalize text-gray-400'>
-                  {pokemon.name}
-                </h2>
-                {pokemon.sprite && (
-                  <img src={pokemon.sprite} alt={pokemon.name} width='150px' />
-                )}
-                <div className='text-2xl font-semibold capitalize text-gray-500'>
-                  Type: {pokemon.typeNames?.join(', ') || 'Unknown'}
-                </div>
-              </Link>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (isFavorite(pokemon)) {
-                    handleRemoveFromFavorites(pokemon);
-                  } else {
-                    handleAddToFavorites(pokemon);
-                  }
-                }}
-                className='mb-4 px-4 py-2 text-sm text-black bg-gray-400 rounded hover:bg-gray-500 transition'
-              >
-                {isFavorite(pokemon)
-                  ? 'Remove from Favorites'
-                  : 'Add to Favorites'}
-              </button>
-            </div>
+              name={pokemon.name}
+              sprite={pokemon.sprite}
+              typeNames={pokemon.typeNames}
+              isFavorite={isFavorite(pokemon)}
+              onToggleFavorite={() => {
+                if (isFavorite(pokemon)) {
+                  handleRemoveFromFavorites(pokemon);
+                } else {
+                  handleAddToFavorites(pokemon);
+                }
+              }}
+            />
           ))
         ) : (
           <p>No Pokemon found</p>

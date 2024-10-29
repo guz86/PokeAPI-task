@@ -2,10 +2,11 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
-
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { addFavorite, removeFavorite } from '../store/favoritesSlice';
+import Navbar from '@/features/navbar/ui/navbar.ui';
+import SearchBar from '@/features/searchBar/ui/searchBar.ui';
 
 interface PokemonType {
   slot: number;
@@ -269,49 +270,33 @@ export default function Home() {
 
   return (
     <div className='flex flex-col items-center gap-2.5'>
-      <div className='flex justify-between items-center w-full mb-4 p-4 bg-gray-700'>
-        <Link href='/'>
-          <h1 className='text-2xl font-bold text-white cursor-pointer'>
-            Pokedex
-          </h1>
-        </Link>
-        <Link href='/favorites'>
-          <button className='px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-500 transition'>
-            Favorites
-          </button>
-        </Link>
+      <Navbar />
+      <div className='flex flex-row items-center gap-10'>
+        <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+
+        <select
+          className='p-2 mb-4 text-black border border-gray-300 rounded-md'
+          value={selectedType}
+          onChange={(e) => setSelectedType(e.target.value)}
+        >
+          <option value='all'>All</option>
+          {types.map((type) => (
+            <option key={type.name} value={type.name}>
+              {type.name.charAt(0).toUpperCase() + type.name.slice(1)}
+            </option>
+          ))}
+        </select>
       </div>
-
-      <input
-        type='text'
-        placeholder='Search Pokemon'
-        className='p-3 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 ease-in-out shadow-md hover:shadow-lg text-black'
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-
-      <select
-        className='p-2 mb-4 text-black border border-gray-300 rounded-md'
-        value={selectedType}
-        onChange={(e) => setSelectedType(e.target.value)}
-      >
-        <option value='all'>All</option>
-        {types.map((type) => (
-          <option key={type.name} value={type.name}>
-            {type.name.charAt(0).toUpperCase() + type.name.slice(1)}
-          </option>
-        ))}
-      </select>
 
       <div className='flex flex-row flex-wrap justify-center items-center gap-2'>
         {pokemons.length > 0 ? (
           pokemons.map((pokemon) => (
             <div
               key={pokemon.name}
-              className='p-10 flex flex-col gap-4 items-center bg-gray-800 h-80 w-80'
+              className='p-5 flex flex-col gap-4 items-center bg-gray-800 h-80 w-80'
             >
               <Link href={`/pokemon/${pokemon.name}`}>
-                <h2 className='text-4xl font-semibold capitalize text-gray-400'>
+                <h2 className='text-2xl font-semibold capitalize text-gray-400'>
                   {pokemon.name}
                 </h2>
                 {pokemon.sprite && (

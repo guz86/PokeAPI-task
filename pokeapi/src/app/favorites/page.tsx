@@ -1,9 +1,9 @@
 'use client';
 import { useSelector } from 'react-redux';
-import Link from 'next/link';
 import { RootState } from '../../store/store';
 import { Pokemon } from '@/features/favorites/types/pokemon.types';
 import PokemonList from '@/features/favorites/ui/pokemonList.component';
+import Navbar from '@/features/navbar/ui/navbar.ui';
 
 export default function FavoritesPage() {
   const favorites = useSelector(
@@ -17,18 +17,7 @@ export default function FavoritesPage() {
 
   return (
     <div className='flex flex-col items-center gap-4 p-4'>
-      <div className='flex justify-between items-center w-full mb-4 p-4 bg-gray-700'>
-        <Link href='/'>
-          <h1 className='text-2xl font-bold text-white cursor-pointer'>
-            Pokedex
-          </h1>
-        </Link>
-        <Link href='/favorites'>
-          <button className='px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-500 transition'>
-            Favorites
-          </button>
-        </Link>
-      </div>
+      <Navbar />
       <h1 className='text-4xl font-semibold text-gray-300'>Favorite Pokémon</h1>
       {pokemonFavorites.length > 0 ? (
         <PokemonList pokemons={pokemonFavorites} />

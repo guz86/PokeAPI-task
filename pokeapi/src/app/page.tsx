@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store/store';
@@ -8,6 +7,7 @@ import { addFavorite, removeFavorite } from '../store/favoritesSlice';
 import Navbar from '@/features/navbar/ui/navbar.ui';
 import SearchBar from '@/features/searchBar/ui/searchBar.ui';
 import TypeSelect from '@/features/typeSelect/ui/typeSelect.ui';
+import PokemonCard from '@/features/pokemonCard/PokemonCard';
 
 interface PokemonType {
   slot: number;
@@ -30,40 +30,6 @@ interface Pokemon {
   sprite?: string | null;
   typeNames?: string[];
 }
-
-const PokemonCard = ({
-  name,
-  sprite,
-  typeNames,
-  isFavorite,
-  onToggleFavorite,
-}: {
-  name: string;
-  sprite?: string | null;
-  typeNames?: string[];
-  isFavorite: boolean;
-  onToggleFavorite: () => void;
-}) => {
-  return (
-    <div className='p-5 flex flex-col gap-4 items-center bg-gray-800 h-80 w-80'>
-      <Link href={`/pokemon/${name}`}>
-        <h2 className='text-2xl font-semibold capitalize text-gray-400'>
-          {name}
-        </h2>
-        {sprite && <img src={sprite} alt={name} width='150px' />}
-        <div className='text-2xl font-semibold capitalize text-gray-500'>
-          Type: {typeNames?.join(', ') || 'Unknown'}
-        </div>
-      </Link>
-      <button
-        onClick={onToggleFavorite}
-        className='mb-4 px-4 py-2 text-sm text-black bg-gray-400 rounded hover:bg-gray-500 transition'
-      >
-        {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
-      </button>
-    </div>
-  );
-};
 
 export default function Home() {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);

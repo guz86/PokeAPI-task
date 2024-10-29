@@ -2,22 +2,19 @@
 
 import Link from 'next/link';
 
-interface Pokemon {
-  name: string;
-  url: string;
-  sprite?: string | null;
-  typeNames?: string[];
-  isFavorite: boolean;
-  onToggleFavorite: () => void;
-}
-
 const PokemonCard = ({
   name,
   sprite,
   typeNames,
   isFavorite,
   onToggleFavorite,
-}: Pokemon) => {
+}: {
+  name: string;
+  sprite?: string | null;
+  typeNames?: string[];
+  isFavorite: boolean;
+  onToggleFavorite: () => void;
+}) => {
   return (
     <div className='p-5 flex flex-col gap-4 items-center bg-gray-800 h-80 w-80'>
       <Link href={`/pokemon/${name}`}>

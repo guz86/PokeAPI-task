@@ -1,7 +1,7 @@
 import {
   FavoritePokemon,
   FavoritesState,
-} from '@/features/pokemon/types/pokemon';
+} from '@/features/favorites/types/pokemon.types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 const initialState: FavoritesState = {

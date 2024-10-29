@@ -1,6 +1,6 @@
 'use client';
-import { PokemonListProps } from '../types/pokemon';
-import PokemonCard from './PokemonCard';
+import { PokemonListProps } from '../types/pokemon.types';
+import PokemonCard from './pokemonCard.component';
 
 const PokemonList: React.FC<PokemonListProps> = ({ pokemons }) => {
   return (

@@ -1,6 +1,7 @@
 'use client';
-import { capitalize } from '@/utils/formatters';
-import { PokemonCardProps } from '../types/pokemon';
+
+import { capitalize } from '../logic/formatters.logic';
+import { PokemonCardProps } from '../types/pokemon.types';
 
 const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon }) => {
   return (

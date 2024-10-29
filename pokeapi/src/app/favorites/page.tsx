@@ -2,8 +2,8 @@
 import { useSelector } from 'react-redux';
 import Link from 'next/link';
 import { RootState } from '../../store/store';
-import { Pokemon } from '@/features/pokemon/types/pokemon';
-import PokemonList from '@/features/pokemon/components/PokemonList';
+import { Pokemon } from '@/features/favorites/types/pokemon.types';
+import PokemonList from '@/features/favorites/ui/pokemonList.component';
 
 export default function FavoritesPage() {
   const favorites = useSelector(

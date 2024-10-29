@@ -2,7 +2,7 @@
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import { Pokemon } from '@/features/favorites/types/pokemon.types';
-import PokemonList from '@/features/favorites/ui/pokemonList.component';
+import PokemonList from '@/features/favorites/ui/favoritesList.component';
 import Navbar from '@/features/navbar/ui/navbar.ui';
 
 export default function FavoritesPage() {

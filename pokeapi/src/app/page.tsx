@@ -16,6 +16,7 @@ import {
   TypesApiResponse,
 } from '@/features/types';
 import { fetchAllPokemonNames } from '@/hooks/pokemonService';
+import { fetchTypes } from '@/hooks/fetchTypes';
 
 export default function Home() {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
@@ -130,17 +131,6 @@ export default function Home() {
     }
   }, [offset, isLoading]);
 
-  const fetchTypes = async () => {
-    try {
-      const response = await fetch('https://pokeapi.co/api/v2/type');
-      if (!response.ok) throw new Error('Error fetching types');
-      const data: TypesApiResponse = await response.json();
-      setTypes(data.results.slice(0, -1));
-    } catch (error) {
-      console.error('Error fetching types:', error);
-    }
-  };
-
   const fetchPokemonsByType = async (type: string): Promise<Pokemon[]> => {
     try {
       const response = await fetch(`https://pokeapi.co/api/v2/type/${type}`);
@@ -165,7 +155,9 @@ export default function Home() {
         const allPokemonNames = await fetchAllPokemonNames();
         setAllPokemon(allPokemonNames);
         setNamesLoaded(true);
-        await fetchTypes();
+
+        const types = await fetchTypes();
+        setTypes(types);
       } catch (error) {
         console.error('Error loading initial data:', error);
       }

@@ -12,12 +12,16 @@ const usePokemonLimit = () => {
     const screenHeight = window.innerHeight;
 
     const blocksInRow = Math.floor(screenWidth / POKEMON_WIDTH);
-    const blocksInColumn = Math.ceil((screenHeight * HEIGHT_MULTIPLIER) / POKEMON_HEIGHT);
+    const blocksInColumn = Math.ceil(
+      (screenHeight * HEIGHT_MULTIPLIER) / POKEMON_HEIGHT
+    );
 
     return blocksInRow * blocksInColumn;
   };
 
-  const [initialLimit, setInitialLimit] = useState<number>(calculateInitialLimit());
+  const [initialLimit, setInitialLimit] = useState<number>(
+    calculateInitialLimit()
+  );
 
   useEffect(() => {
     const updateLimit = () => {
@@ -25,16 +29,16 @@ const usePokemonLimit = () => {
       setInitialLimit(newLimit);
     };
 
-    updateLimit(); 
+    updateLimit();
 
-    window.addEventListener('resize', updateLimit); 
+    window.addEventListener('resize', updateLimit);
 
     return () => {
       window.removeEventListener('resize', updateLimit);
     };
   }, []);
 
-  return initialLimit; 
+  return initialLimit;
 };
 
 export default usePokemonLimit;

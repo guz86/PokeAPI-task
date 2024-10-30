@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Navbar from '@/features/navbar/ui/navbar.ui';
 import SearchBar from '@/features/searchBar/ui/searchBar.ui';
 import TypeSelect from '@/features/typeSelect/ui/typeSelect.ui';
@@ -14,6 +14,7 @@ import {
 import { fetchAllPokemonNames } from '@/hooks/pokemonService';
 import { fetchTypes } from '@/hooks/fetchTypes';
 import usePokemonLimit from '@/hooks/usePokemonLimit';
+import useInfiniteScroll from '@/hooks/useInfiniteScroll';
 
 export default function Home() {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
@@ -24,7 +25,7 @@ export default function Home() {
   const [selectedType, setSelectedType] = useState<string>('all');
   const [types, setTypes] = useState<{ name: string; url: string }[]>([]);
   const [namesLoaded, setNamesLoaded] = useState(false);
-  
+
   const initialLimit = usePokemonLimit();
 
   const fetchPokemons = async (
@@ -61,7 +62,6 @@ export default function Home() {
       );
 
       setPokemons((prev) => [...prev, ...pokemonsWithDetails]);
-
       setOffset((prevOffset) => prevOffset + limit);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -89,16 +89,6 @@ export default function Home() {
       return { sprite: 'file.svg', typeNames: [] };
     }
   };
-
-  const handleScroll = useCallback(() => {
-    if (
-      window.innerHeight + document.documentElement.scrollTop >=
-        document.documentElement.offsetHeight - 50 &&
-      !isLoading
-    ) {
-      fetchPokemons(10, offset, allPokemon, searchTerm, selectedType);
-    }
-  }, [offset, isLoading]);
 
   const fetchPokemonsByType = async (type: string): Promise<Pokemon[]> => {
     try {
@@ -140,7 +130,6 @@ export default function Home() {
       if (namesLoaded) {
         try {
           setPokemons([]);
-           
           await fetchPokemons(
             initialLimit,
             0,
@@ -157,18 +146,13 @@ export default function Home() {
     loadPokemons();
   }, [namesLoaded]);
 
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [handleScroll]);
+  useInfiniteScroll(isLoading, () =>
+    fetchPokemons(10, offset, allPokemon, searchTerm, selectedType)
+  );
 
   useEffect(() => {
     setPokemons([]);
     setOffset(0);
-
-     
     fetchPokemons(initialLimit, 0, allPokemon, searchTerm, selectedType);
   }, [searchTerm, selectedType]);
 

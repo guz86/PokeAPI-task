@@ -1,12 +1,13 @@
 import { Pokemon } from '@/features/types';
 import Link from 'next/link';
 import usePokemonCardLogic from '../logic/pokemonCard.logic';
+import React from 'react';
 
 interface PokemonCardUIProps {
   pokemon: Pokemon;
 }
 
-const PokemonCard: React.FC<PokemonCardUIProps> = ({ pokemon }) => {
+const PokemonCard: React.FC<PokemonCardUIProps> = React.memo(({ pokemon }) => {
   const { isFavorite, handleAddToFavorites, handleRemoveFromFavorites } =
     usePokemonCardLogic({ pokemon });
 
@@ -32,6 +33,6 @@ const PokemonCard: React.FC<PokemonCardUIProps> = ({ pokemon }) => {
       )}
     </div>
   );
-};
+});
 
 export default PokemonCard;

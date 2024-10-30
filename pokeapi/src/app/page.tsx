@@ -6,7 +6,7 @@ import SearchBar from '@/features/searchBar/ui/searchBar.ui';
 import TypeSelect from '@/features/typeSelect/ui/typeSelect.ui';
 import PokemonCard from '@/features/pokemonCard/PokemonCard';
 import { Pokemon, TypeResponse } from '@/features/types';
-import { fetchAllPokemonNames } from '@/hooks/pokemonService';
+import { fetchAllPokemonNames } from '@/hooks/fetchAllPokemonNames';
 import { fetchTypes } from '@/hooks/fetchTypes';
 import usePokemonLimit from '@/hooks/usePokemonLimit';
 import useInfiniteScroll from '@/hooks/useInfiniteScroll';

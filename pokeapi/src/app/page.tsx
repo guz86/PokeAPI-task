@@ -13,6 +13,7 @@ import {
 } from '@/features/types';
 import { fetchAllPokemonNames } from '@/hooks/pokemonService';
 import { fetchTypes } from '@/hooks/fetchTypes';
+import usePokemonLimit from '@/hooks/usePokemonLimit';
 
 export default function Home() {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
@@ -23,19 +24,8 @@ export default function Home() {
   const [selectedType, setSelectedType] = useState<string>('all');
   const [types, setTypes] = useState<{ name: string; url: string }[]>([]);
   const [namesLoaded, setNamesLoaded] = useState(false);
-
-  const pokemonHeight = 300;
-  const pokemonWidth = 300;
-
-  const calculateInitialLimit = () => {
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
-
-    const blocksInRow = Math.floor(screenWidth / pokemonWidth);
-    const blocksInColumn = Math.ceil((screenHeight * 1.3) / pokemonHeight);
-
-    return blocksInRow * blocksInColumn;
-  };
+  
+  const initialLimit = usePokemonLimit();
 
   const fetchPokemons = async (
     limit: number,
@@ -150,7 +140,7 @@ export default function Home() {
       if (namesLoaded) {
         try {
           setPokemons([]);
-          const initialLimit = calculateInitialLimit();
+           
           await fetchPokemons(
             initialLimit,
             0,
@@ -178,7 +168,7 @@ export default function Home() {
     setPokemons([]);
     setOffset(0);
 
-    const initialLimit = calculateInitialLimit();
+     
     fetchPokemons(initialLimit, 0, allPokemon, searchTerm, selectedType);
   }, [searchTerm, selectedType]);
 

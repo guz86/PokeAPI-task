@@ -1,9 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../store/store';
-import { addFavorite, removeFavorite } from '../store/favoritesSlice';
 import Navbar from '@/features/navbar/ui/navbar.ui';
 import SearchBar from '@/features/searchBar/ui/searchBar.ui';
 import TypeSelect from '@/features/typeSelect/ui/typeSelect.ui';
@@ -13,7 +10,6 @@ import {
   PokemonDetails,
   PokemonType,
   TypeResponse,
-  TypesApiResponse,
 } from '@/features/types';
 import { fetchAllPokemonNames } from '@/hooks/pokemonService';
 import { fetchTypes } from '@/hooks/fetchTypes';
@@ -27,23 +23,6 @@ export default function Home() {
   const [selectedType, setSelectedType] = useState<string>('all');
   const [types, setTypes] = useState<{ name: string; url: string }[]>([]);
   const [namesLoaded, setNamesLoaded] = useState(false);
-
-  const dispatch = useDispatch();
-
-  const favorites = useSelector(
-    (state: RootState) => state.favorites.favorites
-  );
-
-  const handleAddToFavorites = (pokemon: Pokemon) => {
-    dispatch(addFavorite({ name: pokemon.name, url: pokemon.url }));
-  };
-
-  const handleRemoveFromFavorites = (pokemon: Pokemon) => {
-    dispatch(removeFavorite(pokemon.name));
-  };
-
-  const isFavorite = (pokemon: Pokemon) =>
-    favorites.some((fav) => fav.name === pokemon.name);
 
   const pokemonHeight = 300;
   const pokemonWidth = 300;
@@ -218,20 +197,7 @@ export default function Home() {
       <div className='flex flex-row flex-wrap justify-center items-center gap-2'>
         {pokemons.length > 0 ? (
           pokemons.map((pokemon) => (
-            <PokemonCard
-              key={pokemon.name}
-              name={pokemon.name}
-              sprite={pokemon.sprite}
-              typeNames={pokemon.typeNames}
-              isFavorite={isFavorite(pokemon)}
-              onToggleFavorite={() => {
-                if (isFavorite(pokemon)) {
-                  handleRemoveFromFavorites(pokemon);
-                } else {
-                  handleAddToFavorites(pokemon);
-                }
-              }}
-            />
+            <PokemonCard key={pokemon.name} pokemon={pokemon} />
           ))
         ) : (
           <p>No Pokémon found.</p>

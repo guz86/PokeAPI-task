@@ -1,37 +1,51 @@
 'use client';
 
+import { addFavorite, removeFavorite } from '@/store/favoritesSlice';
+import { RootState } from '@/store/store';
 import Link from 'next/link';
+import { useDispatch, useSelector } from 'react-redux';
+import { Pokemon } from '../types';
 
-const PokemonCard = ({
-  name,
-  sprite,
-  typeNames,
-  isFavorite,
-  onToggleFavorite,
-}: {
-  name: string;
-  sprite?: string | null;
-  typeNames?: string[];
-  isFavorite: boolean;
-  onToggleFavorite: () => void;
-}) => {
+interface PokemonCardProps {
+  pokemon: Pokemon;
+}
+
+const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon }) => {
+  const dispatch = useDispatch();
+
+  const favorites = useSelector(
+    (state: RootState) => state.favorites.favorites
+  );
+  const isFavorite = favorites.some((name) => name === pokemon.name);
+
+  const handleAddToFavorites = () => {
+    dispatch(addFavorite(pokemon.name));
+  };
+
+  const handleRemoveFromFavorites = () => {
+    dispatch(removeFavorite(pokemon.name));
+  };
+
   return (
     <div className='p-5 flex flex-col gap-4 items-center bg-gray-800 h-80 w-80'>
-      <Link href={`/pokemon/${name}`}>
+      <Link href={`/pokemon/${pokemon.name}`}>
         <h2 className='text-2xl font-semibold capitalize text-gray-400'>
-          {name}
+          {pokemon.name}
         </h2>
-        {sprite && <img src={sprite} alt={name} width='150px' />}
+        {pokemon.sprite && (
+          <img src={pokemon.sprite} alt={pokemon.name} width='150px' />
+        )}
         <div className='text-2xl font-semibold capitalize text-gray-500'>
-          Type: {typeNames?.join(', ') || 'Unknown'}
+          Type: {pokemon.typeNames?.join(', ') || 'Unknown'}
         </div>
       </Link>
-      <button
-        onClick={onToggleFavorite}
-        className='mb-4 px-4 py-2 text-sm text-black bg-gray-400 rounded hover:bg-gray-500 transition'
-      >
-        {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
-      </button>
+      {isFavorite ? (
+        <button onClick={handleRemoveFromFavorites}>
+          Remove from Favorites
+        </button>
+      ) : (
+        <button onClick={handleAddToFavorites}>Add to Favorites</button>
+      )}
     </div>
   );
 };

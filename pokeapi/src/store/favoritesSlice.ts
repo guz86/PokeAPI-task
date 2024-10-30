@@ -1,7 +1,4 @@
-import {
-  FavoritePokemon,
-  FavoritesState,
-} from '@/features/favorites/types/pokemon.types';
+import { FavoritesState } from '@/features/favorites/types/pokemon.types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 const initialState: FavoritesState = {
@@ -12,17 +9,15 @@ const favoritesSlice = createSlice({
   name: 'favorites',
   initialState,
   reducers: {
-    addFavorite: (state, action: PayloadAction<FavoritePokemon>) => {
-      const exists = state.favorites.some(
-        (pokemon) => pokemon.name === action.payload.name
-      );
+    addFavorite: (state, action: PayloadAction<string>) => {
+      const exists = state.favorites.some((name) => name === action.payload);
       if (!exists) {
         state.favorites.push(action.payload);
       }
     },
     removeFavorite: (state, action: PayloadAction<string>) => {
       state.favorites = state.favorites.filter(
-        (pokemon) => pokemon.name !== action.payload
+        (name) => name !== action.payload
       );
     },
   },

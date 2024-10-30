@@ -12,7 +12,7 @@ export default function FavoritesPage() {
 
   const pokemonFavorites: Pokemon[] = favorites.map((favorite, index) => ({
     id: index,
-    name: favorite.name,
+    name: favorite,
   }));
 
   return (

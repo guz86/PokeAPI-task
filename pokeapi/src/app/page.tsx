@@ -5,16 +5,12 @@ import Navbar from '@/features/navbar/ui/navbar.ui';
 import SearchBar from '@/features/searchBar/ui/searchBar.ui';
 import TypeSelect from '@/features/typeSelect/ui/typeSelect.ui';
 import PokemonCard from '@/features/pokemonCard/PokemonCard';
-import {
-  Pokemon,
-  PokemonDetails,
-  PokemonType,
-  TypeResponse,
-} from '@/features/types';
+import { Pokemon, TypeResponse } from '@/features/types';
 import { fetchAllPokemonNames } from '@/hooks/pokemonService';
 import { fetchTypes } from '@/hooks/fetchTypes';
 import usePokemonLimit from '@/hooks/usePokemonLimit';
 import useInfiniteScroll from '@/hooks/useInfiniteScroll';
+import { fetchPokemonDetails } from '@/hooks/fetchPokemonDetails';
 
 export default function Home() {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
@@ -67,26 +63,6 @@ export default function Home() {
       console.error('Error fetching data:', error);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const fetchPokemonDetails = async (
-    url: string
-  ): Promise<{ sprite: string | null; typeNames: string[] }> => {
-    try {
-      const response = await fetch(url);
-      if (!response.ok) throw new Error('Error fetching pokemon details');
-
-      const data: PokemonDetails = await response.json();
-      const sprite = data.sprites.front_default || 'file.svg';
-      const typeNames = data.types.map(
-        (typeObj: PokemonType) => typeObj.type.name
-      );
-
-      return { sprite, typeNames };
-    } catch (error) {
-      console.error('Error fetching pokemon details:', error);
-      return { sprite: 'file.svg', typeNames: [] };
     }
   };
 

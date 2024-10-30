@@ -5,12 +5,13 @@ import Navbar from '@/features/navbar/ui/navbar.ui';
 import SearchBar from '@/features/searchBar/ui/searchBar.ui';
 import TypeSelect from '@/features/typeSelect/ui/typeSelect.ui';
 import PokemonCard from '@/features/pokemonCard/PokemonCard';
-import { Pokemon, TypeResponse } from '@/features/types';
+import { Pokemon } from '@/features/types';
 import { fetchAllPokemonNames } from '@/hooks/fetchAllPokemonNames';
 import { fetchTypes } from '@/hooks/fetchTypes';
 import usePokemonLimit from '@/hooks/usePokemonLimit';
 import useInfiniteScroll from '@/hooks/useInfiniteScroll';
 import { fetchPokemonDetails } from '@/hooks/fetchPokemonDetails';
+import { fetchPokemonsByType } from '@/hooks/fetchPokemonsByType';
 
 export default function Home() {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
@@ -63,24 +64,6 @@ export default function Home() {
       console.error('Error fetching data:', error);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const fetchPokemonsByType = async (type: string): Promise<Pokemon[]> => {
-    try {
-      const response = await fetch(`https://pokeapi.co/api/v2/type/${type}`);
-      if (!response.ok) throw new Error('Error fetching Pokemon by type');
-
-      const data: TypeResponse = await response.json();
-      const pokemonList: Pokemon[] = data.pokemon.map((p) => ({
-        name: p.pokemon.name,
-        url: p.pokemon.url,
-      }));
-
-      return pokemonList;
-    } catch (error) {
-      console.error('Error fetching Pokemon by type:', error);
-      return [];
     }
   };
 

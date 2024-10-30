@@ -1,30 +1,14 @@
-'use client';
-
-import { addFavorite, removeFavorite } from '@/store/favoritesSlice';
-import { RootState } from '@/store/store';
+import { Pokemon } from '@/features/types';
 import Link from 'next/link';
-import { useDispatch, useSelector } from 'react-redux';
-import { Pokemon } from '../types';
+import usePokemonCardLogic from '../logic/pokemonCard.logic';
 
-interface PokemonCardProps {
+interface PokemonCardUIProps {
   pokemon: Pokemon;
 }
 
-const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon }) => {
-  const dispatch = useDispatch();
-
-  const favorites = useSelector(
-    (state: RootState) => state.favorites.favorites
-  );
-  const isFavorite = favorites.some((name) => name === pokemon.name);
-
-  const handleAddToFavorites = () => {
-    dispatch(addFavorite(pokemon.name));
-  };
-
-  const handleRemoveFromFavorites = () => {
-    dispatch(removeFavorite(pokemon.name));
-  };
+const PokemonCard: React.FC<PokemonCardUIProps> = ({ pokemon }) => {
+  const { isFavorite, handleAddToFavorites, handleRemoveFromFavorites } =
+    usePokemonCardLogic({ pokemon });
 
   return (
     <div className='p-5 flex flex-col gap-4 items-center bg-gray-800 h-80 w-80'>

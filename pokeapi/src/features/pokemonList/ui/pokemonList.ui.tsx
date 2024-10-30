@@ -3,8 +3,8 @@
 import { FC } from 'react';
 import SearchBar from '@/features/searchBar/ui/searchBar.ui';
 import TypeSelect from '@/features/typeSelect/ui/typeSelect.ui';
-import PokemonCard from '@/features/pokemonCard/PokemonCard';
 import usePokemonListLogic from '../logic/pokemonList.logic';
+import PokemonCard from '@/features/pokemonCard/ui/pokemonCard.ui';
 
 const PokemonList: FC = () => {
   const {

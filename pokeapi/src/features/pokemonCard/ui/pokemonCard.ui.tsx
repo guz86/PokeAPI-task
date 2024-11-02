@@ -35,4 +35,6 @@ const PokemonCard: React.FC<PokemonCardUIProps> = React.memo(({ pokemon }) => {
   );
 });
 
+PokemonCard.displayName = 'PokemonCard';
+
 export default PokemonCard;

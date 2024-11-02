@@ -34,21 +34,21 @@ npm run build
  
 
 ## Folder structure
--app
- └── favorites
- └── pokemon
+app/
+- favorites
+- pokemon
  
--features/
- └── favorites
- └── navbar
- └── pokemon
- └── pokemonCard
- └── pokemonList
- └── searchBar
- └── typeSelect
+features/
+- favorites
+- navbar
+- pokemon
+- pokemonCard
+- pokemonList
+- searchBar
+- typeSelect
  
--hooks
--store
+hooks/
+store/
 
 ## Screenshots
 

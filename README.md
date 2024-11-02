@@ -1,4 +1,65 @@
 # PokeAPI-task
+
+A Pokedex application using PokeAPI allows users to browse a list of Pokémon, view detailed information on each, and filter and sort the list by type or name. Users can add Pokémon to a favorites list managed with Redux and view this list on a separate page. Built with TypeScript, React.js, and Next.js or Vite, the app focuses on performance, clean code, and responsive design.
+ 
+Deploy: 
+
+## Author
+
+- [Pavel Gordienko](https://github.com/guz86)
+
+## Setup and Running
+
+- Use `node 22.x` or higher.
+- Clone this repo: `$ git clone https://github.com/guz86/PokeAPI-task.git`.
+- Go to downloaded folder: `$ cd pokeapi`.
+- Install dependencies: `$ npm install`.
+- Start server: `$ npm run start`.
+- Now you can see web application to the address: `http://localhost:3000/`.
+
+### Build
+
+Builds the app for production to the build folder. It correctly bundles React in production mode and optimizes the build for the best performance.
+
+```bash
+npm run build
+```
+
+## Stack
+- TypeScript
+- React.js
+- Next.js
+- Redux Toolkit
+- Tailwindcss
+ 
+
+## Folder structure
+-app
+ └── favorites
+ └── pokemon
+ 
+-features/
+ └── favorites
+ └── navbar
+ └── pokemon
+ └── pokemonCard
+ └── pokemonList
+ └── searchBar
+ └── typeSelect
+ 
+-hooks
+-store
+
+## Screenshots
+
+![image](https://github.com/user-attachments/assets/6e31db3e-92f4-4c24-959d-b48ebafdcb68)
+
+![image](https://github.com/user-attachments/assets/adc74da0-0fb0-4777-bafa-a896573629f3)
+
+![image](https://github.com/user-attachments/assets/c0e605cc-451b-460a-a0ae-3900b2671106)
+
+
+
  
 Покедекс с использованием PokeAPI
 Описание
